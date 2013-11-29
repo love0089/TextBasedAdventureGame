@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,7 @@ namespace TextBasedAdventureGame
             bool playing = true;
             Game theGame = new Game();
             theGame.reset();
+            Console.WriteLine("WATER\nLOOK AROUND\nTEST INVENTORY\nINVENTORY\n");
             while (playing == true)
             {
                 theGame.checkIfValid(Console.ReadLine());
@@ -24,11 +26,13 @@ namespace TextBasedAdventureGame
     {
         bool beenHereWater = false;
         bool lookedAround = false;
-        List<string> inventory = new List<string>();
+        public Hashtable inventory = new Hashtable();
+        public string inventoryItem = "";
+        public int inventoryKey = 0;
 
         public void reset()
         {
-            inventory.Add("EndOfInv");
+            //inventory.Add("EndOfInv");
 
             beenHereWater = false;
             lookedAround = false;
@@ -41,31 +45,38 @@ namespace TextBasedAdventureGame
 
         private void whereTo(string toHere)
         {
+            Console.Clear();
+            toHere = toHere.ToUpper();
             switch (toHere)
             {
-                case "Water":
+                case "WATER":
                     waterStuff();
                     break;
 
-                case "Look around":
+                case "LOOK AROUND":
                     LookAround();
                     break;
 
-                case "Test Inventory":
+                case "TEST":
                     testInventory();
                     break;
 
-                case "Inventory":
+                case "INVENTORY":
                     printInventory();
+                    break;
+
+                case "EXIT":
+                    
                     break;
             }
         }
 
         private void printInventory()
         {
-            foreach (string inventoryItem in inventory)
+            Console.WriteLine("INVENTORY");
+            foreach (string inventoryitem in inventory.Keys)
             {
-                Console.WriteLine(inventoryItem);
+                Console.WriteLine(inventoryitem.ToUpper());
             }
         }
 
@@ -95,34 +106,44 @@ namespace TextBasedAdventureGame
 
             else
             {
-                Console.WriteLine("You gaze around in wonder. Having never seen such quick rapids before, so you take your time crossing. Unfortunately, taking your time means you were in the way when a tree came down, knocking you into the wtaer, where you freeze/drown/get clubbed by a tree to death.");
+                Console.WriteLine("You gaze around in wonder. Having never seen such quick rapids before, so you take your time crossing. Unfortunately, taking your time means you were in the way when a tree came down, knocking you into the water, where you freeze/drown/get clubbed by a tree to death.");
             }
         }
 
         private void testInventory()
         {
-            for (int i = 0; i < 3; i++)
+            addToInventory(Console.ReadLine());
+        }
+
+        private void addToInventory(string item)
+        {
+            if (inventoryKey > 3)
             {
-                inventory.Add("Item " + i);
+                inventoryFull(item);
+            }
+            else
+            {
+                inventory.Add(item, inventoryKey);
+                inventoryKey++;
             }
         }
 
         private void inventoryFull(string itemToGet)
         {
             Console.WriteLine("Your inventory is full. You'll have to drop an item to pick up that " + itemToGet + ".");
-            foreach (string inventoryItem in inventory)
+            foreach (DictionaryEntry inventoryitem in inventory)
             {
-                Console.WriteLine(inventoryItem);
+                Console.WriteLine(inventoryitem.Value as string);
             }
 
             string thingToDrop = Console.ReadLine();
 
-            foreach (string inventoryItem in inventory)
+            foreach (string inventoryitem in inventory)
             {
-                if (inventoryItem == thingToDrop)
+                if (inventoryitem == thingToDrop)
                 {
                     inventory.Remove(thingToDrop);
-                    inventory.TrimExcess();
+
                 }
 
                 else
@@ -141,7 +162,7 @@ namespace TextBasedAdventureGame
                 {
                     if (inventoryItem == null)
                     {
-                        inventory.Add("Rope");
+                        //inventory.Add("Rope");
                         lookedAround = true;
                         return;
                     }
